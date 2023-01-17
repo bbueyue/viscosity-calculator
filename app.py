@@ -9,7 +9,7 @@ from dash.dependencies import Input, Output, State
 PATHNAME_PREFIX = '/viscosity-calculator/'
 app = dash.Dash(
     __name__,
-    routes_pathname_prefix=('%s' % PATHNAME_PREFIX),
+    routes_pathname_prefix=PATHNAME_PREFIX,
     requests_pathname_prefix=PATHNAME_PREFIX
 )
 
