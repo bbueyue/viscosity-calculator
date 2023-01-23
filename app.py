@@ -40,7 +40,7 @@ app.layout = html.Div(children=[
                  html.Div(style={'text-align': 'center'},
                           children=[
                               # App title
-                              html.P('RT-DC B Viscosity '
+                              html.P('RT-DC Buffers Viscosity '
                                      'Calculator',
                                      style={'font-size': '22px',
                                             'text-align': 'center',
