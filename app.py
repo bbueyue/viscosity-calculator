@@ -42,7 +42,7 @@ app.layout = html.Div(children=[
                               # App title
                               html.P('RT-DC Buffers Viscosity '
                                      'Calculator',
-                                     style={'font-size': '22px',
+                                     style={'font-size': '32px',
                                             'text-align': 'center',
                                             'padding-bottom': '10px'
                                             }),
@@ -50,7 +50,7 @@ app.layout = html.Div(children=[
                               # (title and design)
                               html.Div([
                                   html.H2('Medium',
-                                          style={'font-size': '14px'
+                                          style={'font-size': '22px'
                                                  }),
                                   dcc.Dropdown(id="medium",
                                                searchable=True,
@@ -63,14 +63,15 @@ app.layout = html.Div(children=[
                                                style={'width': '250px',
                                                       'height': '35px',
                                                       'color': 'blue',
-                                                      'display': 'inline-block'
+                                                      'display': 'inline-block',
+                                                      'font-size': '22px'
                                                       })
                               ]),
                               # Temperature input box component
                               # (title and design)
                               html.Div([
                                   html.H2('Temperature [°C]',
-                                          style={'font-size': '14px'
+                                          style={'font-size': '22px'
                                                  }),
                                   dcc.Input(id="temperature",
                                             type='text',
@@ -84,7 +85,7 @@ app.layout = html.Div(children=[
                               # (title and design)
                               html.Div([
                                   html.H2('Channel size [μm]',
-                                          style={'font-size': '14px'
+                                          style={'font-size': '22px'
                                                  }),
                                   dcc.Input(id="channel_size",
                                             type='text',
@@ -98,7 +99,7 @@ app.layout = html.Div(children=[
                               # (title and design)
                               html.Div([
                                   html.H2('Flowrate [μl/s]',
-                                          style={'font-size': '14px'
+                                          style={'font-size': '22px'
                                                  }),
                                   dcc.Input(id="flow_rate",
                                             type='text',
@@ -115,7 +116,7 @@ app.layout = html.Div(children=[
                               html.Button('Submit',
                                           id='submit_button',
                                           n_clicks=0, disabled=False,
-                                          style={'font-size': '12px',
+                                          style={'font-size': '16px',
                                                  'cursor': 'pointer',
                                                  'text-align': 'center',
                                                  'color': 'white',
@@ -124,8 +125,15 @@ app.layout = html.Div(children=[
                               # Output component to display viscosity
                               html.Div(id='show_viscosity',
                                        style={'whiteSpace': 'pre-line',
-                                              'font-size': '20px'
-                                              })
+                                              'font-size': '26px'
+                                              }),
+                              html.P('Note that the viscosity calculator was designed for the temperatures between 22 °C and 37 °C.'
+                                     ' For the temperatures outside of this range, the viscosity curve is extrapolated.'
+                                     ,
+                                     style={'font-size': '18px',
+                                            'text-align': 'middle',
+                                            #'padding-bottom': '10px'
+                                            })
                           ]),
              ])  # row Div
 ])  # main Div
@@ -135,15 +143,16 @@ app.layout = html.Div(children=[
 # based on user given input
 def compute_viscosity(float_feats):
     medium, temp, chsize, flwrate = float_feats
+    temp_kelvin = temp + 273.15
     if medium == 1.0:
-        n_MC0X = 0.0026 * temp + 0.590
-        k_MC0X = 0.05 * np.exp(35 * (1 / temp))
+        n_MC0X = 0.00223 * temp_kelvin - 0.0056
+        k_MC0X = 2 * 10 ** -6 * np.exp(3378 * (1 / temp_kelvin))
     if medium == 2.0:
-        n_MC0X = 0.0024 * temp + 0.529
-        k_MC0X = 0.15 * np.exp(27.8 * (1 / temp))
+        n_MC0X = 0.00223 * temp_kelvin - 0.0744
+        k_MC0X = 6 * 10 ** -6 * np.exp(3378 * (1 / temp_kelvin))
     if medium == 3.0:
-        n_MC0X = 0.0021 * temp + 0.467
-        k_MC0X = 0.40 * np.exp(30.6 * (1 / temp))
+        n_MC0X = 0.00223 * temp_kelvin - 0.1455
+        k_MC0X = 17 * 10 ** -6 * np.exp(3378 * (1 / temp_kelvin))
     shear_rate = 8 * flwrate / ((chsize * 1e-3) ** 3) * (0.6671 + 0.2121 / n_MC0X)
     viscosity = k_MC0X * (shear_rate ** (n_MC0X - 1)) * 1000
     viscosity = round(viscosity, 3)
@@ -193,17 +202,17 @@ def display_output(n_clicks, stored_viscosity):
 
 # This call back function will reset the input boxes
 # as soon as user click on the submit button
-@app.callback(
-    [Output("temperature", "value"),
-     Output("channel_size", "value"),
-     Output("flow_rate", "value")],
-    Input('submit_button', 'n_clicks'))
-def reset_inputs(click):
-    trigger = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    if 'submit_button' in trigger:
-        return [''] * 3
-    else:
-        return dash.no_update
+# @app.callback(
+#     [Output("temperature", "value"),
+#      Output("channel_size", "value"),
+#      Output("flow_rate", "value")],
+#     Input('submit_button', 'n_clicks'))
+# def reset_inputs(click):
+#     trigger = [p['prop_id'] for p in dash.callback_context.triggered][0]
+#     if 'submit_button' in trigger:
+#         return [''] * 3
+#     else:
+#         return dash.no_update
 
 
 # Run the app
