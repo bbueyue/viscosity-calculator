@@ -144,17 +144,20 @@ app.layout = html.Div(children=[
 def compute_viscosity(float_feats):
     medium, temp, chsize, flwrate = float_feats
     temp_kelvin = temp + 273.15
+    alpha = 0.00223
+    lambd = 3379.7
+
     if medium == 1.0:
-        n_MC0X = 0.00223 * temp_kelvin - 0.0056
-        k_MC0X = 2 * 10 ** -6 * np.exp(3378 * (1 / temp_kelvin))
+        n = alpha * temp_kelvin - 0.0056
+        k = 2.3 * 10 ** -6 * np.exp(lambd * (1 / temp_kelvin))
     if medium == 2.0:
-        n_MC0X = 0.00223 * temp_kelvin - 0.0744
-        k_MC0X = 6 * 10 ** -6 * np.exp(3378 * (1 / temp_kelvin))
+        n = alpha * temp_kelvin - 0.0744
+        k = 5.7 * 10 ** -6 * np.exp(lambd * (1 / temp_kelvin))
     if medium == 3.0:
-        n_MC0X = 0.00223 * temp_kelvin - 0.1455
-        k_MC0X = 17 * 10 ** -6 * np.exp(3378 * (1 / temp_kelvin))
-    shear_rate = 8 * flwrate / ((chsize * 1e-3) ** 3) * (0.6671 + 0.2121 / n_MC0X)
-    viscosity = k_MC0X * (shear_rate ** (n_MC0X - 1)) * 1000
+        n = alpha * temp_kelvin - 0.1455
+        k = 16.52 * 10 ** -6 * np.exp(lambd * (1 / temp_kelvin))
+    shear_rate = 8 * flwrate / ((chsize * 1e-3) ** 3) * (0.6671 + 0.2121 / n)
+    viscosity = k * (shear_rate ** (n - 1)) * 1000
     viscosity = round(viscosity, 3)
     return viscosity
 
